@@ -1,0 +1,128 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>iConomyUnlocked</groupId>
+  <artifactId>iConomyUnlocked</artifactId>
+  <version>0.0.1</version>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.bukkitAPIVersion>1.13</project.bukkitAPIVersion>
+    <java.version>17</java.version>
+  </properties>
+  <repositories>
+    <repository>
+      <id>spigotmc-repo</id>
+      <url>https://hub.spigotmc.org/nexus/content/groups/public</url>
+    </repository>
+
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+
+    <!-- VaultUnlockedAPI -->
+    <repository>
+      <id>codemc-repo</id>
+      <url>https://repo.codemc.org/repository/maven-public</url>
+    </repository>
+
+    <!-- CommentedConfiguration -->
+    <repository>
+      <id>glaremasters repo</id>
+      <url>https://repo.glaremasters.me/repository/towny/</url>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.jetbrains</groupId>
+      <artifactId>annotations</artifactId>
+      <version>23.0.0</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>2.3.232</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot-api</artifactId>
+      <version>1.20.4-R0.1-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>net.milkbowl.vault</groupId>
+      <artifactId>VaultUnlockedAPI</artifactId>
+      <version>2.7</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.github.townyadvanced.commentedconfiguration</groupId>
+      <artifactId>CommentedConfiguration</artifactId>
+      <version>1.0.3</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <defaultGoal>clean package</defaultGoal>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.13.0</version>
+          <configuration>
+            <release>${java.version}</release>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>3.6.0</version>
+          <configuration>
+            <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
+            <relocations>
+              <relocation>
+                <pattern>io.github.townyadvanced.commentedconfiguration</pattern>
+                <shadedPattern>io.github.townyadvanced.config</shadedPattern>
+              </relocation>
+            </relocations>
+            <filters>
+              <filter>
+                <artifact>*:*</artifact>
+                <excludes>
+                  <exclude>META-INF/MANIFEST.MF</exclude>
+                  <exclude>META-INF/**/module-info.class</exclude>
+                </excludes>
+              </filter>
+            </filters>
+            <transformers>
+              <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"> </transformer>
+              <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"> </transformer>
+              <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer"> </transformer>
+            </transformers>
+            <minimizeJar>true</minimizeJar>
+          </configuration>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <goals>
+                <goal>shade</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+  </build>
+</project>

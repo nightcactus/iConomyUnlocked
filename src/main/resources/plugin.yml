@@ -1,0 +1,68 @@
+name: iConomyUnlocked
+main: io.github.townyadvanced.iconomy.iConomyUnlocked
+version: ${project.version}
+description: A simple economy plugin with support for VaultUnlocked.
+api-version: ${project.bukkitAPIVersion}
+authors: [Nijikokun, ElgarL, LlmDl]
+depend: [VaultUnlocked]
+load: startup
+folia-supported: true
+
+libraries:
+    - com.h2database:h2:2.3.232
+    - com.mysql:mysql-connector-j:9.1.0
+
+commands:
+    money:
+        description: Controls account balances and more
+        usage: /money
+        
+permissions:
+    iConomy.admin:
+        default: false
+        children:
+            iConomy.admin.account.create: true
+            iConomy.admin.account.remove: true
+            iConomy.admin.reset: true
+            iConomy.admin.bank.create: true
+            iConomy.admin.empty: true
+            iConomy.admin.purge: true
+            iConomy.admin.stats: true
+            iConomy.admin.grant: true
+            iConomy.admin.hide: true
+            iConomy.admin.set: true
+            
+    iConomy.admin.account.create:
+        default: op
+    iConomy.admin.account.remove:
+        default: op
+    iConomy.admin.reset:
+        default: op
+    iConomy.admin.bank.create:
+        default: op
+    iConomy.admin.empty:
+        default: op
+    iConomy.admin.purge:
+        default: op
+    iConomy.admin.stats:
+        default: op
+    iConomy.admin.grant:
+        default: op
+    iConomy.admin.hide:
+        default: op
+    iConomy.admin.set:
+        default: op
+    iConomy.import:
+        default: op
+    
+    iConomy.access:
+        default: true
+    iConomy.list:
+        default: op
+    iConomy.payment:
+        default: true
+    iConomy.rank:
+        default: true
+    
+    
+    
