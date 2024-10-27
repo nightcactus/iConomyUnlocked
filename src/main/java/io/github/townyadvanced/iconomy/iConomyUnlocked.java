@@ -67,7 +67,7 @@ public class iConomyUnlocked extends JavaPlugin {
 	}
 
 	public void loadLangFile() throws Exception {
-		LangStrings.loadConfig(getDataFolder().toPath().resolve("lang.yml"));
+		LangStrings.loadLangFile(getDataFolder().toPath().resolve("lang.yml"));
 	}
 
 	public String getVersion() {

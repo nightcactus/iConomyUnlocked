@@ -8,7 +8,7 @@ import io.github.townyadvanced.iconomy.util.FileMgmt;
 public class LangStrings {
 	private static CommentedConfiguration config, newConfig;
 
-	public static void loadConfig(Path configPath) throws Exception {
+	public static void loadLangFile(Path configPath) throws Exception {
 		if (FileMgmt.checkOrCreateFile(configPath.toString())) {
 
 			// read the lang.yml into memory
@@ -28,7 +28,7 @@ public class LangStrings {
 		newConfig = new CommentedConfiguration(configPath);
 		newConfig.load();
 
-		for (ConfigNodes root : ConfigNodes.values()) {
+		for (LangFile root : LangFile.values()) {
 			if (root.getComments().length > 0)
 				newConfig.addComment(root.getRoot(), root.getComments());
 			else
