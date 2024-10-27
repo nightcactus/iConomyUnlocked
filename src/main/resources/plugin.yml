@@ -4,7 +4,6 @@ version: ${project.version}
 description: A simple economy plugin with support for VaultUnlocked.
 api-version: ${project.bukkitAPIVersion}
 authors: [Nijikokun, ElgarL, LlmDl]
-depend: [VaultUnlocked]
 load: startup
 folia-supported: true
 

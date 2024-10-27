@@ -1,9 +1,10 @@
 package io.github.townyadvanced.iconomy;
 
+import java.util.function.Function;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -33,6 +34,7 @@ public class iConomyUnlocked extends JavaPlugin {
 	@Override
 	public void onLoad() {
 		if (!registerEconomy()) {
+			getLogger().severe("Neither Vault or VaultUnlocked were found. Please download Vault or VaultUnlocked to use iConomyUnlocked!");
 			disableWithMessage("Could not register with VaultUnlocked!");
 			return;
 		}
@@ -73,34 +75,43 @@ public class iConomyUnlocked extends JavaPlugin {
 	}
 	
 	/**
-	 * Register as a ServiceProvider, and with Vault.
+	 * Register as a ServiceProvider, and with Vault and/or VaultUnlocked.
 	 * 
 	 * @return true if successful.
 	 */
 	private boolean registerEconomy() {
-		if (checkForModernVault()) {
-			final ServicesManager sm = this.getServer().getServicesManager();
+		final ServicesManager sm = this.getServer().getServicesManager();
 
+		boolean vault2hooked = false;
+		boolean vault1hooked = false;
+		if (vaultUnlockedPresent()) {
+			Class<Economy> vaultUnlocked = net.milkbowl.vault2.economy.Economy.class;
+			sm.register(vaultUnlocked, new VaultUnlockedEconomy(this), this, ServicePriority.Highest);
+			getLogger().info("Registered VaultUnlocked interface.");
+			vault2hooked = getServer().getServicesManager().getRegistration(vaultUnlocked) != null;
+		}
+
+		if (vaultPresent()) {
 			@SuppressWarnings("deprecation")
 			Class<net.milkbowl.vault.economy.Economy> vault = net.milkbowl.vault.economy.Economy.class;
 			sm.register(vault, new VaultEconomy(this), this, ServicePriority.Highest);
 			getLogger().info("Registered Vault interface.");
-
-			Class<Economy> vaultUnlocked = net.milkbowl.vault2.economy.Economy.class;
-			sm.register(vaultUnlocked, new VaultUnlockedEconomy(this), this, ServicePriority.Highest);
-			getLogger().info("Registered VaultUnlocked interface.");
-
-			RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(vaultUnlocked);
-			return rsp != null;
-		} else {
-			getLogger().severe("VaultUnlocked not found. Please download VaultUnlocked to use iConomyUnlocked!");
-			return false;
+			vault1hooked = getServer().getServicesManager().getRegistration(vault) != null;
 		}
+
+		return vault1hooked || vault2hooked;
 	}
 
-	private boolean checkForModernVault() {
-		Plugin vault = Bukkit.getPluginManager().getPlugin("Vault");
-		return vault != null && !vault.getDescription().getVersion().startsWith("1");
+	private static Function<Plugin, Boolean> vaultVersionFun = (vault) -> vault.getDescription().getVersion().startsWith("1");
+
+	private static boolean vaultUnlockedPresent() {
+		Plugin vault = plugin.getServer().getPluginManager().getPlugin("Vault");
+		return vault != null && vault.isEnabled() && !vaultVersionFun.apply(vault);
+	}
+
+	private static boolean vaultPresent() {
+		Plugin vault = plugin.getServer().getPluginManager().getPlugin("Vault");
+		return vault != null && vault.isEnabled() && vaultVersionFun.apply(vault);
 	}
 
 	private void registerCommands() {

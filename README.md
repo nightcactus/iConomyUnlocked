@@ -21,7 +21,7 @@ iConomyUnlocked has been created to give iConomy 5-using servers an exit path. I
 ----
 ### Requirements:
 
-- [VaultUnlocked](https://github.com/TheNewEconomy/VaultUnlocked)
+- [VaultUnlocked](https://github.com/TheNewEconomy/VaultUnlocked) or Vault.
 
 ----
 ### Commands:
