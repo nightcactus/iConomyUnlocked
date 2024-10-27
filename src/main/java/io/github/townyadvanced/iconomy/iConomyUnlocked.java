@@ -89,6 +89,12 @@ public class iConomyUnlocked extends JavaPlugin {
 			sm.register(vaultUnlocked, new VaultUnlockedEconomy(this), this, ServicePriority.Highest);
 			getLogger().info("Registered VaultUnlocked interface.");
 			vault2hooked = getServer().getServicesManager().getRegistration(vaultUnlocked) != null;
+
+			@SuppressWarnings("deprecation")
+			Class<net.milkbowl.vault.economy.Economy> vault = net.milkbowl.vault.economy.Economy.class;
+			sm.register(vault, new VaultEconomy(this), this, ServicePriority.Highest);
+			getLogger().info("Registered Vault interface.");
+			vault1hooked = getServer().getServicesManager().getRegistration(vault) != null;
 		}
 
 		if (vaultPresent()) {
@@ -106,12 +112,12 @@ public class iConomyUnlocked extends JavaPlugin {
 
 	private static boolean vaultUnlockedPresent() {
 		Plugin vault = plugin.getServer().getPluginManager().getPlugin("Vault");
-		return vault != null && vault.isEnabled() && !vaultVersionFun.apply(vault);
+		return vault != null && !vaultVersionFun.apply(vault);
 	}
 
 	private static boolean vaultPresent() {
 		Plugin vault = plugin.getServer().getPluginManager().getPlugin("Vault");
-		return vault != null && vault.isEnabled() && vaultVersionFun.apply(vault);
+		return vault != null && vaultVersionFun.apply(vault);
 	}
 
 	private void registerCommands() {
