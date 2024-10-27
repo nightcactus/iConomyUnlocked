@@ -99,6 +99,47 @@ public class Accounts {
     }
 
     /**
+     * Imports an Account.
+     * 
+     * @param uuid the Account uuid.
+     * @param name the Account name.
+     * @param balance the balance.
+     * @oaram hidden whether it is hidden.
+     * @return true if successful.
+     */
+    public boolean importAccount(String uuidraw, String name, double balance, boolean hidden) {
+		UUID uuid = UUID.fromString(uuidraw);
+		if (uuid == null)
+			return false;
+
+		if (exists(uuid)) {
+			Account account = Account.getAccount(uuid);
+			account.setName(name);
+			account.getHoldings().set(balance);
+			account.setHidden(hidden);
+			return true;
+		}
+
+        Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+            conn = iConomyUnlocked.getBackEnd().getConnection();
+            ps = conn.prepareStatement("INSERT INTO " + SQLTable + "(uuid, username, balance, hidden) VALUES (?, ?, ?, ?)");
+            ps.setString(1, uuid.toString());
+            ps.setString(2, name);
+            ps.setDouble(3, balance);
+            ps.setBoolean(4, hidden);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            return false;
+        } finally {
+        	iConomyUnlocked.getBackEnd().close(conn, ps);
+        }
+        return true;
+    }
+
+    
+    /**
      * Remove the user Account with this uuid.
      * 
      * @param uuid the UUID of the account.

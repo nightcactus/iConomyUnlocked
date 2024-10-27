@@ -30,7 +30,8 @@ permissions:
             iConomy.admin.grant: true
             iConomy.admin.hide: true
             iConomy.admin.set: true
-            
+            iConomy.admin.importiconomy: true
+
     iConomy.admin.account.create:
         default: op
     iConomy.admin.account.remove:
@@ -51,9 +52,9 @@ permissions:
         default: op
     iConomy.admin.set:
         default: op
-    iConomy.import:
+    iConomy.admin.importiconomy:
         default: op
-    
+
     iConomy.access:
         default: true
     iConomy.list:
@@ -62,6 +63,3 @@ permissions:
         default: true
     iConomy.rank:
         default: true
-    
-    
-    

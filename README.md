@@ -17,6 +17,7 @@ iConomyUnlocked has been created to give iConomy 5-using servers an exit path. I
 - Supports Folia.
 - Supports the H2 and MySQL database types.
 - Uses CommentedConfiguration for a config which automatically updates while maintaining your settings.
+- Can import accounts from iConomy 5.26.
 
 ----
 ### Requirements:
@@ -45,6 +46,7 @@ iConomyUnlocked has been created to give iConomy 5-using servers an exit path. I
   - purge: Removes all default-balance accounts.
   - empty: Empties all accounts.
   - stats: Checks stats about the economy.
+  - importiconomy: Imports accounts from iConomy 5.26.
 
 ----
 ### Permissions:
@@ -62,6 +64,7 @@ iConomyUnlocked has been created to give iConomy 5-using servers an exit path. I
       - iConomy.admin.grant: true
       - iConomy.admin.hide: true
       - iConomy.admin.set: true
+      - iConomy.admin.importiconomy: true
   - iConomy.access:
     - default: true
   - iConomy.payment:

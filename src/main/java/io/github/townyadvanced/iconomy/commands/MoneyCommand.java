@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -13,12 +14,16 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.iConomy.ConversionAccount;
+import com.iConomy.iConomy;
+
 import io.github.townyadvanced.iconomy.iConomyUnlocked;
-import io.github.townyadvanced.iconomy.settings.Settings;
 import io.github.townyadvanced.iconomy.settings.LangStrings;
+import io.github.townyadvanced.iconomy.settings.Settings;
 import io.github.townyadvanced.iconomy.system.Account;
 import io.github.townyadvanced.iconomy.system.Holdings;
 import io.github.townyadvanced.iconomy.util.Messaging;
@@ -68,6 +73,7 @@ public class MoneyCommand implements TabExecutor {
 		case "set" -> parseMoneySetCommand(player, sender, isPlayer, split);
 		case "stats", "-s" -> parseMoneyStatsCommand(sender);
 		case "top", "-t" -> parseMoneyTopCommand(player, sender, split);
+		case "importiconomy" -> parseImportIconomyCommand(sender, split);
 		default -> parseMoneyPlayerName(sender, name);
 		}
 	}
@@ -444,6 +450,32 @@ public class MoneyCommand implements TabExecutor {
 		showBalance(account, sender, false);
 	}
 
+	private void parseImportIconomyCommand(CommandSender sender, String[] split) throws CommandException {
+		if (!Permissions.hasPermission(sender, "iConomy.admin.importiconomy"))
+			return;
+	
+		Plugin iconomy = Bukkit.getPluginManager().getPlugin("iConomy");
+		if (iconomy == null || !iconomy.isEnabled())
+			throw new CommandException("Could not find iConomy on the server.");
+
+		Set<ConversionAccount> conversionAccounts = null; 
+		try {
+			conversionAccounts = iConomy.getConversionAccounts();
+		} catch (NoSuchMethodError e) {
+			throw new CommandException("You can only import from iConomy 5.26 and newer!");
+		}
+
+		int count = 0;
+		for (ConversionAccount account : conversionAccounts) {
+			if (!iConomyUnlocked.getAccounts().importAccount(account.getUuid(), account.getName(), account.getBalance(), account.isHidden())) {
+				log.warning("Could not import account for " + account.getName());
+			}
+			count++;
+		}
+
+		Messaging.send(sender, "<green>Successfully imported " + count + " accounts from iConomy5.");
+	}
+
 	/**
 	 * Help documentation for iConomy all in one method.
 	 *
@@ -502,7 +534,7 @@ public class MoneyCommand implements TabExecutor {
 	}
 
 	private final List<String> SUB_CMDS = Arrays.asList("?", "rank", "top", "pay", "grant", "set", "hide", "create",
-			"remove", "preset", "purge", "empty", "stats");
+			"remove", "preset", "purge", "empty", "stats", "importiconomy");
 	private final List<String> PLAYER_CMDS = Arrays.asList("rank", "pay", "grant", "set", "hide", "create", "remove",
 			"reset");
 	private final List<String> AMOUNT_CMDS = Arrays.asList("pay","grant","set");
