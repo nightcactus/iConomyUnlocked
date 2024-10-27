@@ -1,5 +1,10 @@
 ## [iConomyUnlocked](https://github.com/LlmDl/iConomyUnlocked) - Developed by [LlmDl](https://github.com/LlmDl)
 
+### Download
+
+#### Download iConomyUnlocked at [Modrinth](https://modrinth.com/plugin/iconomyunlocked)
+
+----
 ### Overview
 
 iConomy's lineage dates back to the first years of Bukkit Plugins, created by Nijikokun. Having around 7 distinct versions, iConomy had its ups and downs over the years. At one point [iConomy 5](https://github.com/iconomy5legacy/iConomy) was taken over by ElgarL, and then ultimately LlmDl.
