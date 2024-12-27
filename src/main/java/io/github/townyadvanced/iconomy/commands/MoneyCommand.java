@@ -210,7 +210,7 @@ public class MoneyCommand implements TabExecutor {
 			return;
 		}
 
-		if (iConomyUnlocked.getAccounts().exists(args[0]))
+		if (!iConomyUnlocked.getAccounts().exists(args[0]))
 			throw new CommandException(LangStrings.noAccountFound(args[0]));
 
 		double amount = getValidAmount(args[1]);
