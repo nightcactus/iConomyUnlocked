@@ -106,6 +106,16 @@ public class VaultUnlockedEconomy implements Economy {
 	}
 
 	@Override
+	public boolean createAccount(@NotNull UUID accountID, @NotNull String name, boolean player) {
+		return createAccount(accountID, name);
+	}
+
+	@Override
+	public boolean createAccount(@NotNull UUID accountID, @NotNull String name, @NotNull String worldName, boolean player) {
+		return createAccount(accountID, name);
+	}
+
+	@Override
 	public Map<UUID, String> getUUIDNameMap() {
 		return iConomyUnlocked.getAccounts().getUUIDNameMap();
 	}
