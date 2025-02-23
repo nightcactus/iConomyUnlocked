@@ -2,6 +2,7 @@ package io.github.townyadvanced.iconomy.settings;
 
 import java.math.BigDecimal;
 import java.nio.file.Path;
+import java.text.DecimalFormat;
 import java.util.UUID;
 
 import io.github.townyadvanced.commentedconfiguration.CommentedConfiguration;
@@ -10,7 +11,8 @@ import io.github.townyadvanced.iconomy.util.FileMgmt;
 
 public class Settings {
 	private static CommentedConfiguration config, newConfig;
-	
+	static DecimalFormat FORMAT = new DecimalFormat("###,###,###.##");
+
 	public static void loadConfig(Path configPath, String version) throws Exception {
 		if (FileMgmt.checkOrCreateFile(configPath.toString())) {
 
@@ -110,10 +112,14 @@ public class Settings {
 	}
 
 	public static String format(BigDecimal money) {
-		return format(money.doubleValue());
+		return format(FORMAT.format(money.doubleValue()));
 	}
 
 	public static String format(double money) {
+		return format(BigDecimal.valueOf(money));
+	}
+
+	private static String format(String money) {
 		return String.format(Settings.getEconomyFormat(), money);
 	}
 

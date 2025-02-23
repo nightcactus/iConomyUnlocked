@@ -4,3 +4,5 @@
   - Fix /money pay not detecting missing accounts. 
 0.0.3:
   - Update VaultUnlocked to 2.9.0.
+0.0.4:
+  - Format money values with commas and decimals for easier reading.
