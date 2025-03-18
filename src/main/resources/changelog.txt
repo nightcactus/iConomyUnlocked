@@ -8,3 +8,5 @@
   - Format money values with commas and decimals for easier reading.
 0.0.5:
   - Fix the silent subarg not working properly.
+0.0.6:
+  - Fix default lang string for showing the total number of accounts in the stats command.

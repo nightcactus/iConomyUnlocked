@@ -34,7 +34,7 @@ public enum LangFile {
 	LANG_ACCOUNTS_REMOVED("lang.accounts.removed", "<green>Deleted account: <white>%s<green>."),
 
 	LANG_STATS_HEADER("lang.stats.header", "<green>-----[ <white>iConomy Stats <green>]-----"),
-	LANG_STATS_TOTAL("lang.stats.total", "<gray>Total %s: <white>%s"),
+	LANG_STATS_TOTAL("lang.stats.total", "<gray>Total Accounts: <white>%s"),
 	LANG_STATS_AVERAGE("lang.stats.average", "<gray>Average %s: <white>%s"),
 	LANG_STATS_ACCOUNTS("lang.stats.accounts", "<gray>Total Accounts: <white>%s"),
 	
