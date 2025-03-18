@@ -141,7 +141,7 @@ public class MoneyCommand implements TabExecutor {
 		if (account == null)
 			throw new CommandException(LangStrings.noAccountFound(name));
 
-		boolean silent = args.length == 3 && StringMgmt.is(args[1], new String[] { "silent", "-s" }); 
+		boolean silent = args.length == 3 && StringMgmt.is(args[2], new String[] { "silent", "-s" }); 
 
 		showGrant(sender, account, player, getValidAmount(args[1]), console, silent);
 	}

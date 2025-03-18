@@ -6,3 +6,5 @@
   - Update VaultUnlocked to 2.9.0.
 0.0.4:
   - Format money values with commas and decimals for easier reading.
+0.0.5:
+  - Fix the silent subarg not working properly.
