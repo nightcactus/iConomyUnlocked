@@ -8,6 +8,8 @@ import io.github.townyadvanced.iconomy.settings.LangStrings;
 public class Messaging {
 
 	public static void send(CommandSender sender, String message) {
+		if (sender == null)
+			return;
 		sender.sendMessage(colorize(message));
 	}
 
