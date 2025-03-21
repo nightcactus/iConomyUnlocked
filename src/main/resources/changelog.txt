@@ -9,4 +9,4 @@
 0.0.5:
   - Fix the silent subarg not working properly.
 0.0.6:
-  - Fix default lang string for showing the total number of accounts in the stats command.
+  - Sort out an issue displaying the stats command output.

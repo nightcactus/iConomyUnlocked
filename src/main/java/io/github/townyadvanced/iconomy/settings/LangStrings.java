@@ -157,7 +157,7 @@ public class LangStrings {
 	}
 
 	public static String statsAccounts(String num) {
-		return String.format(getString(LangFile.LANG_STATS_TOTAL), num);
+		return String.format(getString(LangFile.LANG_STATS_ACCOUNTS), num);
 	}
 
 	public static String topHeader(String num) {
