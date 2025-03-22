@@ -20,7 +20,7 @@ public class PlayerJoinListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 
-		if (iConomyUnlocked.getAccounts().get(player.getUniqueId(), player.getName()) == null)
+		if (iConomyUnlocked.getAccounts().get(player.getUniqueId(), player.getName(), true) == null)
 			iConomyUnlocked.getPlugin().getLogger().warning("Error creating / grabbing account for: " + player.getName());
 	}
 }

@@ -308,9 +308,34 @@ public class Accounts {
      * @param name the name of the Account.
      * @return an Account or null if unable.
      */
-    public Account get(UUID uuid, String name) {
-        if (exists(uuid)) {
-            return new Account(uuid, name);
+	public Account get(UUID uuid, String name) {
+		return get(uuid, name, false);
+	}
+
+	/**
+	 * Get an Account by uuid and name, with special awareness for players who have
+	 * changed their name since their last log in. Creates one if it doesn't exist.
+	 * 
+	 * @param uuid            the uuid of the Account.
+	 * @param name            the name of the Account.
+	 * @param playerJoinEvent true when fired from a player join event.
+	 * @return an Account or null if unable.
+	 */
+	public Account get(UUID uuid, String name, boolean playerJoinEvent) {
+		if (exists(uuid)) {
+			if (!playerJoinEvent) {
+				return new Account(uuid, name);
+			} else {
+				Account account = Account.getAccount(uuid);
+				String oldName = account.getName();
+				if (!oldName.equals(name)) {
+					account.setName(name);
+					iConomyUnlocked.getPlugin().getLogger().info(
+						String.format("iConomyUnlocked has found a player with UUID %s has changed their name from %s to %s.", uuid.toString(), oldName, name));
+					iConomyUnlocked.getPlugin().getLogger().info("iConomyUnlocked's database will be altered to reflect this change.");
+				}
+				return account;
+			}
         }
         if (!create(uuid, name)) {
             return null;
