@@ -12,3 +12,5 @@
   - Sort out an issue displaying the stats command output.
   - Prevent sending messages to null CommandSenders.
   - Improve player-name-change detection.
+0.0.7:
+  - Update VaultUnlocked to 2.10.0.
