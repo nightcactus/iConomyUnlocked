@@ -401,7 +401,7 @@ public class MoneyCommand implements TabExecutor {
 
 		Messaging.send(sender, LangStrings.statsHeader());
 		Messaging.send(sender, LangStrings.statsTotal(Settings.getCurrencyName(), Settings.format(TCOH)));
-		Messaging.send(sender, LangStrings.statsAverage(Settings.getCurrencyName(), Settings.format(TCOH / totalAccounts)));
+		Messaging.send(sender, LangStrings.statsAverage(Settings.getCurrencyName(), Settings.format(totalAccounts != 0 ? TCOH / totalAccounts : 0)));
 		Messaging.send(sender, LangStrings.statsAccounts(String.valueOf(accounts)));
 	}
 
