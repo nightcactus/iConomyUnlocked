@@ -14,3 +14,5 @@
   - Improve player-name-change detection.
 0.0.7:
   - Update VaultUnlocked to 2.10.0.
+0.0.8:
+  - Fix division by zero error in /money stats command when no accounts are registered, courtesy of SulkyWhale with PR #6.
