@@ -22,7 +22,7 @@ public enum LangFile {
 	LANG_PLAYER_CREDIT("lang.player.credit","<white>%s's <green>account had <white>%s<green> credited."),
 	
 	LANG_PAYMENT_ROOT("lang.payment","",""),
-	LANG_PAYMENT_SELF("lang.payment.self","","Sorry, you cannot send money to yourself."),
+	LANG_PAYMENT_SELF("lang.payment.self","Sorry, you cannot send money to yourself."),
 	LANG_PAYMENT_TO("lang.payment.to","<green>You have sent <white>%s<green> to <white>%s<green>."),
 	LANG_PAYMENT_FROM("lang.payment.from","<white>%s<green> has sent you <white>%s<green>."),
 	
