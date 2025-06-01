@@ -18,3 +18,5 @@
   - Fix division by zero error in /money stats command when no accounts are registered, courtesy of SulkyWhale with PR #6.
 0.0.9:
   - Enabled console to run /money rank by removing Player casting, courtesy of SulkyWhale with PR #7.
+0.0.10:
+  - Fix the self-payment error message, courtesy of pizzaboy189 with PR #9.
