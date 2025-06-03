@@ -15,6 +15,7 @@ commands:
     money:
         description: Controls account balances and more
         usage: /money
+        aliases: [kese,altın,eco,balance,altin]
         
 permissions:
     iConomy.admin:

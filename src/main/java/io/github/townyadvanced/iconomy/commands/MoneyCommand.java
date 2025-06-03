@@ -1,19 +1,16 @@
 package io.github.townyadvanced.iconomy.commands;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -65,7 +62,7 @@ public class MoneyCommand implements TabExecutor {
 		case "grant", "-g" -> parseMoneyGrantCommand(player, sender, isPlayer, split);
 		case "help", "?" -> getMoneyHelp(sender);
 		case "hide", "-h" -> parseMoneyHideCommand(sender, split);
-		case "pay", "-p" -> parseMoneyPayCommand(player, sender, isPlayer, split);
+		case "gönder", "-p" -> parseMoneyPayCommand(player, sender, isPlayer, split);
 		case "purge", "-pf" -> parseMoneyPurgeCommand(sender);
 		case "rank", "-r" -> parseMoneyRankCommand(player, sender, isPlayer, split);
 		case "remove", "-v" -> parseMoneyRemoveCommand(sender, split);
@@ -74,6 +71,8 @@ public class MoneyCommand implements TabExecutor {
 		case "stats", "-s" -> parseMoneyStatsCommand(sender);
 		case "top", "-t" -> parseMoneyTopCommand(player, sender, split);
 		case "importiconomy" -> parseImportIconomyCommand(sender, split);
+		case "koy" -> parseMoneyDepositCommand(player, sender, isPlayer, split);
+		case "al" -> parseMoneyWithdrawCommand(player, sender, isPlayer, split);
 		default -> parseMoneyPlayerName(sender, name);
 		}
 	}
@@ -215,11 +214,92 @@ public class MoneyCommand implements TabExecutor {
 
 		double amount = getValidAmount(args[1]);
 		if (amount < 0.01D)
-			throw new CommandException("Invalid amount: `w" + amount);
+			throw new CommandException("<gray>→ <teal>[Son Blok] <rose>Geçersiz miktar: <white>" + amount);
 
 		Account from = Account.getAccount(player.getUniqueId());
 		Account to = Account.getAccount(args[0]);
 		showPayment(player, from, to, amount);
+	}
+
+	private void parseMoneyDepositCommand(Player player, CommandSender sender, boolean isPlayer, String[] args) throws CommandException {
+		if (!Permissions.hasPermission(sender, "iConomy.deposit"))
+			return;
+
+		if (!isPlayer)
+			throw new CommandException("Command unavailable from console.");
+
+		if (args.length != 1) {
+			getMoneyHelp(sender);
+			return;
+		}
+
+		double amount = getValidAmount(args[0]);
+		if (amount < 1 || amount % 1 != 0)
+			throw new CommandException("<gray>→ <teal>[Son Blok] <rose>Miktar tam sayı olmalıdır.");
+
+		Holdings holdings = Account.getAccount(player.getUniqueId()).getHoldings();
+		String formatted = Settings.format(amount);
+		int z = 0;
+
+		HashMap<Integer, ItemStack> hm = player.getInventory().removeItem(new ItemStack(Material.GOLD_INGOT, (int) amount));
+		if (hm.isEmpty()) {
+			holdings.add(amount);
+			Messaging.send(sender, "<gray>→ <teal>[Son Blok] <green>Envanterindeki <yellow>"+formatted+"<green> altın keseye koyuldu.");
+			showBalance(player,player,true);
+		} else {
+			for (Map.Entry<Integer, ItemStack> entry : hm.entrySet()) {
+				ItemStack value = entry.getValue();
+				z += value.getAmount();
+			}
+			holdings.add(amount-z);
+			formatted = Settings.format(amount - z);
+			Messaging.send(sender, "<gray>→ <teal>[Son Blok] <green>Envanterindeki <yellow>"+formatted+" altın <green>keseye koyuldu.");
+			showBalance(player,player,true);
+		}
+
+	}
+
+	private void parseMoneyWithdrawCommand(Player player, CommandSender sender, boolean isPlayer, String[] args) throws CommandException {
+		if (!Permissions.hasPermission(sender, "iConomy.withdraw"))
+			return;
+
+		if (!isPlayer)
+			throw new CommandException("Command unavailable from console.");
+
+		if (args.length != 1) {
+			getMoneyHelp(sender);
+			return;
+		}
+
+		double amount = getValidAmount(args[0]);
+		if (amount < 1 || amount % 1 != 0)
+			throw new CommandException("<gray>→ <teal>[Son Blok] <rose>Miktar tam sayı olmalıdır.");
+
+		Holdings holdings = Account.getAccount(player.getUniqueId()).getHoldings();
+
+		if (holdings.hasEnough(amount)) {
+			holdings.subtract(amount);
+			Messaging.send(sender, "<gray>→ <teal>[Son Blok] <green>Kesenden <yellow>"+Settings.format(amount)+" altın <green>aldın.");
+			showBalance(player,player,true);
+			HashMap<Integer, ItemStack> map = player.getInventory().addItem(new ItemStack(Material.GOLD_INGOT, (int) amount));
+			if (!map.isEmpty() && map.get(0).getAmount() != 0) {
+				Messaging.send(sender, "<gray>→ <teal>[Son Blok] <rose>Envanterinde yer kalmadığı için eşyalar yere düştü..");
+
+				if (map.get(0).getAmount() <= 64) {
+					player.getWorld().dropItem(player.getLocation(), new ItemStack(Material.GOLD_INGOT, map.get(0).getAmount()));
+				} else {
+					for (int i = map.get(0).getAmount(); i >= 64; i = i - 64) {
+						player.getWorld().dropItem(player.getLocation(), new ItemStack(Material.GOLD_INGOT, 64));
+					}
+
+					if (map.get(0).getAmount() % 64 != 0) {
+						player.getWorld().dropItem(player.getLocation(), new ItemStack(Material.GOLD_INGOT, map.get(0).getAmount() % 64));
+					}
+				}
+			}
+		} else {
+			throw new CommandException(LangStrings.notEnoughFunds());
+		}
 	}
 
 	private void showPayment(Player player, Account from, Account to, double amount) throws CommandException {
@@ -354,7 +434,7 @@ public class MoneyCommand implements TabExecutor {
 		try {
 			amount = Double.parseDouble(num);
 		} catch (NumberFormatException e) {
-			throw new CommandException("Invalid amount: `w" + num);
+			throw new CommandException("<gray>→ <teal>[Son Blok] <rose>Geçersiz miktar: <white>" + num);
 		}
 		return amount;
 	}
@@ -483,61 +563,64 @@ public class MoneyCommand implements TabExecutor {
 	 * instances of the same help lines.
 	 */
 	private void getMoneyHelp(CommandSender sender) {
-		Messaging.send(sender, "`w iConomyUnlocked");
-		Messaging.send(sender, "`w <> Required, [] Optional");
+		Messaging.send(sender, "`s----- `A(/kese) - Komut Kullanımı `s-----");
+		Messaging.send(sender, "`yKısayol: `Yaltın, money, balance");
 
 		if (sender instanceof Player)
-			Messaging.send(sender, "`G  /money `y Check your balance.");
+			Messaging.send(sender, "`Y  /kese `s- Kesendeki altın miktarını gösterir.");
 
 		if (Permissions.hasPermission(sender, "iConomy.access", true))
-			Messaging.send(sender, "`G  /money `g[player] `y Check someone's balance.");
-
-		Messaging.send(sender, "`G  /money `g? `y For help & Information.");
+			Messaging.send(sender, "`Y  /kese `p<oyuncu> `s- Kesedeki altın miktarını gösterir.");
 
 		if (Permissions.hasPermission(sender, "iConomy.rank", true))
-			Messaging.send(sender, "`G  /money `grank `G[`wplayer`G] `y Rank on the topcharts.");
+			Messaging.send(sender, "`Y  /kese rank `p<oyuncu> `s- Rank on the topcharts.");
 
 		if (Permissions.hasPermission(sender, "iConomy.list", true))
-			Messaging.send(sender, "`G  /money `gtop `G[`wamount`G] `y Richest players listing.");
+			Messaging.send(sender, "`Y  /kese top `p<miktar> `s- Richest players listing.");
 
 		if (Permissions.hasPermission(sender, "iConomy.payment", true))
-			Messaging.send(sender, "`G  /money `gpay `G<`wplayer`G> <`wamount`G> `y Send money to a player.");
+			Messaging.send(sender, "`Y  /kese gönder `p<oyuncu> <miktar> `s- Oyuncuya keseden altın gönderir.");
+
+		if (Permissions.hasPermission(sender, "iConomy.deposit", true))
+			Messaging.send(sender, "`Y  /kese koy `p<miktar> `s- Keseye altın koyar.");
+
+		if (Permissions.hasPermission(sender, "iConomy.withdraw", true))
+			Messaging.send(sender, "`Y  /kese al `p<miktar> `s- Keseden altın alır.");
 
 		if (Permissions.hasPermission(sender, "iConomy.admin.grant", true)) {
-			Messaging.send(sender, "`G  /money `ggrant `G<`wplayer`G> <`wamount`G> [`wsilent`G] `y Give money, optionally silent.");
-			Messaging.send(sender, "`G  /money `ggrant `G<`wplayer`G> -<`wamount`G> [`wsilent`G] `y Take money, optionally silent.");
+			Messaging.send(sender, "`Y  /kese grant `p<oyuncu> <miktar> [silent] `s- Give money, optionally silent.");
+			Messaging.send(sender, "`Y  /kese grant `p<oyuncu> -<miktar> [silent] `s- Take money, optionally silent.");
 		}
 
 		if (Permissions.hasPermission(sender, "iConomy.admin.set", true))
-			Messaging.send(sender, "`G  /money `gset `G<`wplayer`G> <`wamount`G> `y Sets a players balance.");
+			Messaging.send(sender, "`Y  /kese set `p<oyuncu> <miktar> `s- Sets a players balance.");
 
 		if (Permissions.hasPermission(sender, "iConomy.admin.hide", true))
-			Messaging.send(sender, "`G  /money `ghide `G<`wplayer`G> `wtrue`G/`wfalse `y Hide or show an account.");
+			Messaging.send(sender, "`Y  /kese hide `p<oyuncu> true/false `s- Hide or show an account.");
 
 		if (Permissions.hasPermission(sender, "iConomy.admin.account.create", true))
-			Messaging.send(sender, "`G  /money `gcreate `G<`wplayer`G> `y Create player account.");
+			Messaging.send(sender, "`Y  /kese create `p<oyuncu> `s- Create player account.");
 
 		if (Permissions.hasPermission(sender, "iConomy.admin.account.remove", true))
-			Messaging.send(sender, "`G  /money `gremove `G<`wplayer`G> `y Remove player account.");
+			Messaging.send(sender, "`Y  /kese remove `p<oyuncu> `s- Remove player account.");
 
 		if (Permissions.hasPermission(sender, "iConomy.admin.reset", true))
-			Messaging.send(sender, "`G  /money `greset `G<`wplayer`G> `y Reset player account.");
+			Messaging.send(sender, "`Y  /kese reset `p<oyuncu> `s- Reset player account.");
 
 		if (Permissions.hasPermission(sender, "iConomy.admin.purge", true))
-			Messaging.send(sender, "`G  /money `gpurge `y Remove all accounts with inital holdings.");
+			Messaging.send(sender, "`Y  /kese purge `s- Remove all accounts with inital holdings.");
 
 		if (Permissions.hasPermission(sender, "iConomy.admin.empty", true))
-			Messaging.send(sender, "`G  /money `gempty `y Empties database.");
+			Messaging.send(sender, "`Y  /kese empty `s- Empties database.");
 
 		if (Permissions.hasPermission(sender, "iConomy.admin.stats", true))
-			Messaging.send(sender, "`G  /money `gstats `y Check all economic stats.");
+			Messaging.send(sender, "`Y  /kese stats `s- Check all economic stats.");
 	}
 
-	private final List<String> SUB_CMDS = Arrays.asList("?", "rank", "top", "pay", "grant", "set", "hide", "create",
-			"remove", "preset", "purge", "empty", "stats", "importiconomy");
-	private final List<String> PLAYER_CMDS = Arrays.asList("rank", "pay", "grant", "set", "hide", "create", "remove",
+	private final List<String> SUB_CMDS = Arrays.asList("?", "al", "koy", "gönder");
+	private final List<String> PLAYER_CMDS = Arrays.asList("rank", "gönder", "grant", "set", "hide", "create", "remove",
 			"reset");
-	private final List<String> AMOUNT_CMDS = Arrays.asList("pay","grant","set");
+	private final List<String> AMOUNT_CMDS = Arrays.asList("gönder","grant","set");
 	@Nullable
 	@Override
 	public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias,
@@ -554,11 +637,11 @@ public class MoneyCommand implements TabExecutor {
 		} else if (args.length == 2) {
 			if (PLAYER_CMDS.contains(subCmdArg))
 				return null;
-			if (subCmdArg.equals("top"))
-				return Arrays.asList("<amount>");
+			if (subCmdArg.equals("top") || subCmdArg.equals("al") || subCmdArg.equals("koy"))
+				return Arrays.asList("1","10","50");
 		} else if (args.length == 3) {
 			if (AMOUNT_CMDS.contains(subCmdArg))
-				return Arrays.asList("<amount>");
+				return Arrays.asList("1","10","50");
 			if (subCmdArg.equals("hide"))
 				return Arrays.asList("true", "false");
 		} else if (args.length == 4 && subCmdArg.equals("grant")) {
