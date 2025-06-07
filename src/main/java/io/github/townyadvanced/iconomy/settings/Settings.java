@@ -143,6 +143,10 @@ public class Settings {
 		return getString(ConfigNodes.CURRENCY_SETTINGS_FORMAT);
 	}
 
+	public static int getVaultFractionalDigits() {
+		return getInt(ConfigNodes.CURRENCY_SETTINGS_VAULT_FRACTIONAL_DIGITS);
+	}
+	
 	public static double getDefaultBalance() {
 		return getDouble(ConfigNodes.CURRENCY_SETTINGS_DEFAULT_BALANCE);
 	}

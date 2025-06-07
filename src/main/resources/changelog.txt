@@ -20,3 +20,8 @@
   - Enabled console to run /money rank by removing Player casting, courtesy of SulkyWhale with PR #7.
 0.0.10:
   - Fix the self-payment error message, courtesy of pizzaboy189 with PR #9.
+0.0.11:
+  - Fix conversion from iConomy 5.26 failing.
+  - New Config Option: currency_settings.vault_displayed_decimal_places
+    - Default: 0
+    - Default of zero, should display zero decimal places.
